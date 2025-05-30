@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit Recipe - Masala Magic</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f6f6f6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      height: 24px;
+      margin-right: 8px;
+    }
+
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #e1701a;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #e1701a;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      background: linear-gradient(to right, #f7971e, #fd5d47);
+      color: white;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .form-container {
+      background: linear-gradient(to right, #f75b1e, #fd9c47);
+      color: white;
+      width: 1000px;
+      margin: 2rem auto;
+      padding: 2rem;
+      border-radius: 12px;
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+
+    input, textarea, select {
+      padding: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      background: white;
+      color: #e1701a;
+      padding: 1rem;
+      border: none;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 200px;
+      margin: 1rem auto 0;
+      display: block;
+    }
+
+    button:hover {
+      background: #ffa334;
+      color: white;
+    }
+
+    .checkbox-vertical {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* Aligns items to the start of the cross axis */
+      gap: 10px; /* Increased gap for better spacing */
+    }
+
+    .checkbox-vertical label {
+      display: flex;
+      align-items: center; /* Vertically aligns checkbox and text */
+      color: white;
+      font-size: 1rem;
+      width: 100%; /* Allows labels to take full width of their container */
+      justify-content: space-between; /* Pushes quantity input to the right */
+    }
+
+    .checkbox-vertical input[type="checkbox"] {
+      width: auto; /* Allow checkbox to take its natural width */
+      margin-right: 8px; /* Space between checkbox and text */
+    }
+
+    /* Style for new ingredient input fields */
+    .new-ingredient-input {
+      display: flex;
+      gap: 10px; /* Gap between ingredient name and quantity */
+      margin-top: 5px; /* Small margin above new ingredient inputs */
+    }
+
+    .new-ingredient-input input[type="text"] {
+      flex: 1; /* Allow the name input to take available space */
+    }
+
+    .new-ingredient-input input[type="text"][name^="new_quantity_"] {
+      width: 100px; /* Fixed width for quantity input */
+      flex: none; /* Prevent flex growth */
+    }
+
+    /* Styles for quantity input fields next to existing ingredients */
+    .ingredient-item {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .ingredient-item input[type="text"][name^="quantity_"] {
+        width: 80px; /* Adjust as needed */
+        margin-left: 10px; /* Space between ingredient name and quantity input */
+        padding: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        color: #333;
+    }
+
+    .ingredient-checkbox-text {
+        display: flex;
+        align-items: center;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="https://img.icons8.com/emoji/48/000000/fire.png" alt="logo" />
+      Masala Magic
+    </div>
+    <nav>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('recipes') }}">Recipes</a>
+      <a href="{{ url_for('submit') }}">Submit Recipe</a>
+      <a href="{{ url_for('favorites') }}">My Favorites</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Share Your Magic</h1>
+    <p>Submit your delicious recipe to inspire others</p>
+  </div>
+
+  <div class="form-container">
+    <h2>Submit a New Recipe</h2>
+    <form action="/submit" method="POST">
+      <div>
+        <label for="name">Recipe Name*</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+
+      <div>
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" rows="3" placeholder="A brief description of your recipe"></textarea>
+      </div>
+
+      <div>
+        <label>Vegetables</label>
+        <div class="checkbox-vertical">
+            {% for ingredient in ingredients['vegetable'] %}
+              <label class="ingredient-item">
+                <span class="ingredient-checkbox-text">
+                  <input type="checkbox" name="vegetables" value="{{ ingredient.id }}"/>{{- ingredient.name -}}
+                </span>
+                <input type="text" name="quantity_{{ ingredient.id }}" placeholder="e.g., 2 large" />
+              </label>
+            {% endfor %}
+            <div class="new-ingredient-input">
+              <input type="text" name="new_vegetable" placeholder="Add new vegetable">
+              <input type="text" name="new_quantity_vegetable" placeholder="Quantity" />
+            </div>
+          </div>
+      </div>
+
+      <div>
+        <label>Dairy</label>
+        <div class="checkbox-vertical">
+            {% for ingredient in ingredients['dairy'] %}
+              <label class="ingredient-item">
+                <span class="ingredient-checkbox-text">
+                  <input type="checkbox" name="dairy" value="{{ ingredient.id }}"/>{{- ingredient.name -}}
+                </span>
+                <input type="text" name="quantity_{{ ingredient.id }}" placeholder="e.g., 1 cup" />
+              </label>
+            {% endfor %}
+            <div class="new-ingredient-input">
+              <input type="text" name="new_dairy" placeholder="Add new dairy item">
+              <input type="text" name="new_quantity_dairy" placeholder="Quantity" />
+            </div>
+          </div>
+      </div>
+
+      <div>
+        <label>Protein</label>
+        <div class="checkbox-vertical">
+            {% for ingredient in ingredients['protein'] %}
+              <label class="ingredient-item">
+                <span class="ingredient-checkbox-text">
+                  <input type="checkbox" name="protein" value="{{ ingredient.id }}"/>{{- ingredient.name -}}
+                </span>
+                <input type="text" name="quantity_{{ ingredient.id }}" placeholder="e.g., 500g" />
+              </label>
+            {% endfor %}
+            <div class="new-ingredient-input">
+              <input type="text" name="new_protein" placeholder="Add new protein">
+              <input type="text" name="new_quantity_protein" placeholder="Quantity" />
+            </div>
+          </div>
+      </div>
+
+      <div>
+        <label>Spices</label>
+        <div class="checkbox-vertical">
+            {% for ingredient in ingredients['spice'] %}
+              <label class="ingredient-item">
+                <span class="ingredient-checkbox-text">
+                  <input type="checkbox" name="spices" value="{{ ingredient.id }}"/>{{- ingredient.name -}}
+                </span>
+                <input type="text" name="quantity_{{ ingredient.id }}" placeholder="e.g., 1 tsp" />
+              </label>
+            {% endfor %}
+            <div class="new-ingredient-input">
+              <input type="text" name="new_spice" placeholder="Add new spice">
+              <input type="text" name="new_quantity_spice" placeholder="Quantity" />
+            </div>
+          </div>
+      </div>
+
+      <div>
+        <label>Grains</label>
+        <div class="checkbox-vertical">
+            {% for ingredient in ingredients['grain'] %}
+              <label class="ingredient-item">
+                <span class="ingredient-checkbox-text">
+                  <input type="checkbox" name="grains" value="{{ ingredient.id }}"/>{{- ingredient.name -}}
+                </span>
+                <input type="text" name="quantity_{{ ingredient.id }}" placeholder="e.g., 2 cups" />
+              </label>
+            {% endfor %}
+            <div class="new-ingredient-input">
+              <input type="text" name="new_grain" placeholder="Add new grain">
+              <input type="text" name="new_quantity_grain" placeholder="Quantity" />
+            </div>
+          </div>
+      </div>
+
+      <div>
+        <label>Other Ingredients</label>
+        <div class="checkbox-vertical">
+            {% for ingredient in ingredients['other'] %}
+              <label class="ingredient-item">
+                <span class="ingredient-checkbox-text">
+                  <input type="checkbox" name="others" value="{{ ingredient.id }}"/>{{- ingredient.name -}}
+                </span>
+                <input type="text" name="quantity_{{ ingredient.id }}" placeholder="e.g., 1 unit" />
+              </label>
+            {% endfor %}
+            <div class="new-ingredient-input">
+              <input type="text" name="new_other" placeholder="Add new ingredient">
+              <input type="text" name="new_quantity_other" placeholder="Quantity" />
+            </div>
+          </div>
+      </div>
+
+      <div>
+        <label for="instructions">Instructions*</label>
+        <textarea id="instructions" name="instructions" rows="5" required></textarea>
+      </div>
+
+      <div>
+        <label for="rating">Rating (1 to 5)*</label>
+        <select id="rating" name="rating" required>
+          <option value="">Select Rating</option>
+          <option value="1">⭐</option>
+          <option value="2">⭐⭐</option>
+          <option value="3">⭐⭐⭐</option>
+          <option value="4">⭐⭐⭐⭐</option>
+          <option value="5">⭐⭐⭐⭐⭐</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="cuisine">Cuisine (optional)</label>
+        <input type="text" id="cuisine" name="cuisine" placeholder="e.g., South Indian, Punjabi">
+      </div>
+
+      <button type="submit">Submit Recipe</button>
+    </form>
+  </div>
+
+</body>
+</html>

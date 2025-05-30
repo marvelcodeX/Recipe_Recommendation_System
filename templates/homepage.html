@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Masala Magic</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f6f6f6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    header .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+
+    header .logo img {
+      height: 24px;
+      margin-right: 8px;
+    }
+
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      position: relative;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #e1701a;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #e1701a;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      background: linear-gradient(to right, #f7971e, #fd5d47);
+      color: white;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .search-box {
+      background: linear-gradient(to right, #f75b1e, #fd9c47);
+      padding: 2rem;
+      border-radius: 10px;
+      margin: 2rem auto;
+      max-width: 900px;
+      color: white;
+    }
+
+    .search-box h2 {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .ingredient-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-group label {
+      font-weight: bold;
+      margin-bottom: 0.4rem;
+    }
+
+    .input-group input {
+      padding: 0.8rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .search-box button {
+      padding: 1rem 1.5rem;
+      border: none;
+      background: #ffffff;
+      color: #e28035;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 200px;
+      margin: 2rem auto 0;
+      display: block;
+    }
+
+    .search-box button:hover {
+      background: #f7971e;
+      color: white;
+    }
+
+    .message {
+      color: white;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .recommended {
+      padding: 2rem;
+    }
+
+    .recommended h2 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-container {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      width: 250px;
+    }
+
+    .card .image {
+      height: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .card .info {
+      padding: 1rem;
+      font-weight: 600;
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 28px;
+      right: 0;
+      background-color: white;
+      min-width: 150px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      z-index: 1;
+    }
+
+    .dropdown-menu a {
+      color: #333;
+      padding: 10px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="https://img.icons8.com/emoji/48/000000/fire.png" alt="logo" />
+      Masala Magic
+    </div>
+    <nav>
+      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('recipes') }}">Recipes</a>
+      <a href="{{ url_for('submit') }}">Submit Recipe</a>
+      <a href="{{ url_for('favorites') }}">My Favorites</a>
+
+      {% if 'user_id' in session %}
+        <div class="dropdown">
+          <img src="https://img.icons8.com/ios-filled/24/user.png" onclick="toggleDropdown()" style="cursor: pointer;" />
+          <div class="dropdown-menu" id="account-dropdown">
+            <a href="{{ url_for('profile') }}">View Profile</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+          </div>
+        </div>
+      {% else %}
+        <a href="{{ url_for('login') }}">
+          <img src="https://img.icons8.com/ios-filled/24/user.png" />
+        </a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <div class="hero">
+    <h1>Find Perfect Indian Recipes</h1>
+    <p>Discover delicious recipes based on ingredients you already have</p>
+  </div>
+
+  <form action="{{ url_for('find_recipe') }}" method="POST">
+    <div class="search-box">
+      <h2>Enter the ingredients you have:</h2>
+      <div class="ingredient-grid">
+        <div class="input-group">
+          <label for="vegetables">Vegetables:</label>
+          <input type="text" id="vegetables" name="vegetables" placeholder="e.g., onion, tomato">
+        </div>
+        <div class="input-group">
+          <label for="dairy">Dairy:</label>
+          <input type="text" id="dairy" name="dairy" placeholder="e.g., milk, cheese">
+        </div>
+        <div class="input-group">
+          <label for="protein">Protein:</label>
+          <input type="text" id="protein" name="protein" placeholder="e.g., chicken, tofu">
+        </div>
+        <div class="input-group">
+          <label for="spices">Spices:</label>
+          <input type="text" id="spices" name="spices" placeholder="e.g., salt, pepper">
+        </div>
+        <div class="input-group">
+          <label for="grains">Grains:</label>
+          <input type="text" id="grains" name="grains" placeholder="e.g., rice, wheat">
+        </div>
+        <div class="input-group">
+          <label for="others">Others:</label>
+          <input type="text" id="others" name="others" placeholder="e.g., olive oil, garlic">
+        </div>
+      </div>
+      <button type="submit">Find Recipe</button>
+    </div>
+  </form>
+
+  <div class="message" id="error-message">
+    <p>Please select at least one ingredient to find recipes.</p>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('account-dropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('account-dropdown');
+      const icon = document.querySelector('.dropdown img');
+      if (!icon.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

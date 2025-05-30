@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ recipe[1] }} - Masala Magic</title>  <!-- Displaying recipe title -->
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff8f2;
+      margin: 0;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #fd5d47;
+    }
+    h2 {
+      margin-top: 1.5rem;
+      color: #333;
+    }
+    ul {
+      padding-left: 1.2rem;
+    }
+    li {
+      margin-bottom: 0.5rem;
+    }
+    p {
+      line-height: 1.6;
+    }
+    a.back-btn {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      background-color: #fd5d47;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
+    a.back-btn:hover {
+      background-color: #e34b3a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>{{ recipe[1] }}</h1>  <!-- Recipe title -->
+    <h2>Ingredients</h2>
+    <ul>
+      {% for ingredient in ingredients %}
+        <li>{{ ingredient[0] }} - {{ ingredient[1]|capitalize }}</li>  <!-- Display ingredient name and category -->
+      {% endfor %}
+    </ul>
+    <h2>Steps</h2>
+    <p>{{ recipe[3] }}</p>  <!-- Display recipe steps -->
+    <a href="/recipes" class="back-btn">← Back to Recipes</a>
+  </div>
+</body>
+</html>

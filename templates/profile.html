@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User Profile</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f6f6f6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    header .logo {
+      font-weight: bold;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    header .logo img {
+      height: 24px;
+      margin-right: 8px;
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: #e1701a;
+    }
+    .profile {
+      padding: 2rem;
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .profile h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .profile .details {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .profile button {
+      padding: 1rem 2rem;
+      background-color: #e1701a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+    .profile button:hover {
+      background-color: #fd9c47;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <img src="https://img.icons8.com/emoji/48/000000/fire.png" alt="logo" />
+      Masala Magic
+    </div>
+    <nav>
+      <a href="/">Home</a>
+      <a href="#">Recipes</a>
+      <a href="#">Submit Recipe</a>
+      <a href="#">My Favorites</a>
+      <a href="/logout">Logout</a>
+    </nav>
+  </header>
+
+  <div class="profile">
+    <h2>Welcome to Your Profile!</h2>
+    <div class="details">
+      <p><strong>Username:</strong> {{ session['username'] }}</p>
+    </div>
+    <button onclick="window.location.href='/update_profile'">Update Profile</button>
+    <button onclick="if(confirm('Are you sure you want to delete your profile?')) { window.location.href='/delete_profile'; }" style="background-color: #b00020;">Delete Profile</button>
+    <button onclick="window.location.href='/logout'">Logout</button>
+  </div>
+
+</body>
+</html>
