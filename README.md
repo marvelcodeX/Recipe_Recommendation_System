@@ -1,6 +1,6 @@
 # Masala Magic 🍛
 
-Masala Magic is a full-stack web application built using Flask and MySQL that lets users explore, search, rate, and favorite delicious recipes. Whether you're searching based on ingredients or submitting your own creations, this platform makes cooking smarter and more interactive.
+Masala Magic is a web application built using Flask and MySQL that lets users explore, search, rate, and favorite delicious recipes. Whether you're searching based on ingredients or submitting your own creations, this platform makes cooking smarter and more interactive.
 
 ---
 
