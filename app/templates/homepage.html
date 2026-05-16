@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Masala Magic - Find Perfect Recipes{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1><i class="fa-solid fa-fire-burner"></i> Find Perfect Indian Recipes</h1>
+  <p>Discover delicious recipes based on ingredients you already have</p>
+</section>
+
+<div class="container mt-3">
+  <form action="{{ url_for('recipes.find_recipe') }}" method="POST">
+    <div class="ingredient-selector">
+      <h2 class="section-title"><i class="fa-solid fa-basket-shopping" style="color: var(--primary);"></i> Select Your Ingredients</h2>
+      <p class="section-subtitle">Pick what you have and we'll find recipes you can make</p>
+
+      {% set categories = [
+        ('vegetable', 'vegetables', 'Vegetables', 'fa-carrot'),
+        ('dairy', 'dairy', 'Dairy', 'fa-cheese'),
+        ('protein', 'protein', 'Protein', 'fa-drumstick-bite'),
+        ('spice', 'spices', 'Spices', 'fa-pepper-hot'),
+        ('grain', 'grains', 'Grains', 'fa-wheat-awn'),
+        ('other', 'others', 'Others', 'fa-jar')
+      ] %}
+
+      {% for cat_key, form_name, cat_label, cat_icon in categories %}
+        {% if ingredients.get(cat_key) %}
+        <div class="category-section">
+          <h3 class="category-title"><i class="fa-solid {{ cat_icon }}"></i> {{ cat_label }}</h3>
+          <div class="ingredient-chips">
+            {% for ing in ingredients[cat_key] %}
+            <div class="ingredient-chip" data-name="{{ ing['name'] }}" data-form="{{ form_name }}">
+              {{ ing['name'] }}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
+
+      <div class="text-center mt-2">
+        <button type="submit" class="btn btn-primary" style="padding: 0.85rem 2.5rem; font-size: 1.05rem;">
+          <i class="fa-solid fa-magnifying-glass"></i> Find Recipes
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="container mt-3 mb-3">
+  <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Latest Recipes</h2>
+  <p class="section-subtitle">Recently added to our collection</p>
+  {% if recipes %}
+  <div class="card-grid">
+    {% for recipe in recipes %}
+    <a href="{{ url_for('recipes.view_recipe', recipe_id=recipe['id']) }}" class="recipe-card card">
+      <h3 class="card-title"><i class="fa-solid fa-utensils" style="color: var(--primary); font-size: 0.85rem;"></i> {{ recipe['title'] }}</h3>
+      <p class="card-description">{{ recipe['description'][:100] }}{% if recipe['description']|length > 100 %}...{% endif %}</p>
+      <div class="card-meta">
+        <span class="star-display">
+          {% set rating = recipe['avg_rating']|default(0)|round|int %}
+          {% for i in range(1, 6) %}
+            <span class="star {% if i <= rating %}filled{% endif %}"><i class="fa-solid fa-star"></i></span>
+          {% endfor %}
+        </span>
+        <span><i class="fa-solid fa-users"></i> {{ recipe['rating_count']|default(0) }}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <i class="fa-solid fa-bowl-food"></i>
+    <p>No recipes available yet.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.ingredient-chip[data-name]').forEach(function(chip) {
+    chip.addEventListener('click', function() {
+      this.classList.toggle('selected');
+      var form = this.closest('form');
+      var name = this.getAttribute('data-name');
+      var formName = this.getAttribute('data-form');
+
+      if (this.classList.contains('selected')) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = formName;
+        input.value = name;
+        input.id = 'inp-' + name.replace(/\s+/g, '-');
+        form.appendChild(input);
+      } else {
+        var existing = document.getElementById('inp-' + name.replace(/\s+/g, '-'));
+        if (existing) existing.remove();
+      }
+    });
+  });
+</script>
+{% endblock %}

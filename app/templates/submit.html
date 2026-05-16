@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Recipe — Masala Magic{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+  <div class="card" style="max-width: 900px; margin: 0 auto; padding: 2.5rem;">
+    <h1 class="text-center mb-1"><i class="fa-solid fa-pen-fancy" style="color: var(--primary);"></i> Submit a Recipe</h1>
+    <p class="text-center mb-3" style="color: var(--text-light);">Share your favorite recipe with the community</p>
+
+    <form method="POST" action="{{ url_for('recipes.submit') }}">
+      <div class="form-group">
+        <label class="form-label" for="name"><i class="fa-solid fa-heading"></i> Recipe Name *</label>
+        <input type="text" class="form-input" id="name" name="name" placeholder="e.g. Butter Chicken" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="description"><i class="fa-solid fa-align-left"></i> Description</label>
+        <textarea class="form-input" id="description" name="description" rows="3"
+                  placeholder="A brief description of your recipe..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="instructions"><i class="fa-solid fa-list-ol"></i> Cooking Steps *</label>
+        <textarea class="form-input" id="instructions" name="instructions" rows="6"
+                  placeholder="1. First step&#10;2. Second step&#10;3. Third step..." required></textarea>
+      </div>
+
+      <h2 class="mb-2 mt-3"><i class="fa-solid fa-basket-shopping" style="color: var(--primary);"></i> Select Ingredients</h2>
+      <p class="mb-2" style="color: var(--text-light); font-size: 0.9rem;">
+        Choose ingredients used in your recipe and specify quantities
+      </p>
+
+      {% set category_labels = {
+        'vegetable': 'Vegetables',
+        'dairy': 'Dairy',
+        'protein': 'Protein',
+        'spice': 'Spices',
+        'grain': 'Grains',
+        'other': 'Others'
+      } %}
+      {% set category_icons = {
+        'vegetable': 'fa-carrot',
+        'dairy': 'fa-cheese',
+        'protein': 'fa-drumstick-bite',
+        'spice': 'fa-pepper-hot',
+        'grain': 'fa-wheat-awn',
+        'other': 'fa-jar'
+      } %}
+      {% set category_form_names = {
+        'vegetable': 'vegetables',
+        'dairy': 'dairy',
+        'protein': 'proteins',
+        'spice': 'spices',
+        'grain': 'grains',
+        'other': 'others'
+      } %}
+
+      <div class="ingredient-selector">
+        {% for category, label in category_labels.items() %}
+        <div class="category-section">
+          <div class="category-title" onclick="toggleCategory('cat-{{ category }}')">
+            <i class="fa-solid {{ category_icons[category] }}"></i> {{ label }}
+            <span id="arrow-cat-{{ category }}" style="margin-left: auto;"><i class="fa-solid fa-chevron-down"></i></span>
+          </div>
+          <div class="ingredient-chips" id="cat-{{ category }}" style="display: none;">
+            {% for ing in ingredients.get(category, []) %}
+            <label class="ingredient-chip-label">
+              <input type="checkbox" name="{{ category_form_names[category] }}" value="{{ ing.id }}"
+                     class="chip-checkbox" data-ing-id="{{ ing.id }}"
+                     onchange="toggleChip(this)">
+              <span class="ingredient-chip">{{ ing.name }}</span>
+            </label>
+            {% endfor %}
+
+            <div id="quantities-{{ category }}" class="mt-1" style="width: 100%;"></div>
+
+            <div class="mt-1" style="width: 100%; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <input type="text" class="form-input" name="new_{{ category }}"
+                     placeholder="Add new {{ category }}" style="flex: 1; min-width: 150px;">
+              <input type="text" class="form-input" name="new_quantity_{{ category }}"
+                     placeholder="Quantity" style="width: 120px;">
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="text-center mt-3">
+        <button type="submit" class="btn btn-primary" style="padding: 0.85rem 3rem; font-size: 1.05rem;">
+          <i class="fa-solid fa-paper-plane"></i> Submit Recipe
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function toggleCategory(id) {
+    const el = document.getElementById(id);
+    const arrow = document.getElementById('arrow-' + id);
+    if (el.style.display === 'none') {
+      el.style.display = 'flex';
+      arrow.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+    } else {
+      el.style.display = 'none';
+      arrow.innerHTML = '<i class="fa-solid fa-chevron-down"></i>';
+    }
+  }
+
+  function toggleChip(checkbox) {
+    const chip = checkbox.nextElementSibling;
+    const ingId = checkbox.dataset.ingId;
+    const category = checkbox.closest('.category-section').querySelector('.ingredient-chips').id;
+    const quantityContainer = document.getElementById('quantities-' + category.replace('cat-', ''));
+
+    if (checkbox.checked) {
+      chip.classList.add('selected');
+      const div = document.createElement('div');
+      div.id = 'qty-' + ingId;
+      div.className = 'form-group';
+      div.style.marginBottom = '0.5rem';
+      div.innerHTML = '<label class="form-label"><i class="fa-solid fa-scale-balanced"></i> ' + chip.textContent.trim() + ' — Quantity</label>' +
+                       '<input type="text" class="form-input" name="quantity_' + ingId + '" placeholder="e.g. 2 cups, 500g">';
+      quantityContainer.appendChild(div);
+    } else {
+      chip.classList.remove('selected');
+      const qtyEl = document.getElementById('qty-' + ingId);
+      if (qtyEl) qtyEl.remove();
+    }
+  }
+</script>
+{% endblock %}

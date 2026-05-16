@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Masala Magic{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+  <div class="form-container">
+    <h2 class="text-center mb-2"><i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> Create an Account</h2>
+
+    <form method="POST" action="{{ url_for('auth.signup') }}">
+      <div class="form-group">
+        <label class="form-label" for="username"><i class="fa-solid fa-user"></i> Username</label>
+        <input class="form-input" type="text" id="username" name="username" placeholder="Choose a username" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input class="form-input" type="password" id="password" name="password" placeholder="Choose a password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-1" style="width: 100%;"><i class="fa-solid fa-user-plus"></i> Sign Up</button>
+    </form>
+
+    <p class="text-center mt-2" style="color: var(--text-light);">
+      Already have an account? <a href="{{ url_for('auth.login') }}" style="color: var(--primary); font-weight: 600;">Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

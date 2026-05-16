@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Masala Magic{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="{{ url_for('recipes.home') }}" class="navbar-brand">
+        <i class="fa-solid fa-bowl-food"></i> Masala Magic
+      </a>
+      <button class="mobile-toggle" onclick="toggleNav()" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="nav-links" id="navLinks">
+        <a href="{{ url_for('recipes.home') }}"
+           class="nav-link {{ 'active' if request.endpoint == 'recipes.home' }}">
+          <i class="fa-solid fa-house"></i> Home</a>
+        <a href="{{ url_for('recipes.recipes_list') }}"
+           class="nav-link {{ 'active' if request.endpoint == 'recipes.recipes_list' }}">
+          <i class="fa-solid fa-book-open"></i> Recipes</a>
+        {% if session.get('user_id') %}
+          <a href="{{ url_for('recipes.submit') }}"
+             class="nav-link {{ 'active' if request.endpoint == 'recipes.submit' }}">
+            <i class="fa-solid fa-plus"></i> Submit</a>
+          <a href="{{ url_for('favorites.favorites') }}"
+             class="nav-link {{ 'active' if request.endpoint == 'favorites.favorites' }}">
+            <i class="fa-solid fa-heart"></i> Favorites</a>
+          <a href="{{ url_for('profile.profile') }}"
+             class="nav-link {{ 'active' if request.endpoint == 'profile.profile' }}">
+            <i class="fa-solid fa-user"></i> Profile</a>
+          <a href="{{ url_for('auth.logout') }}" class="nav-link">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}"
+             class="nav-link {{ 'active' if request.endpoint == 'auth.login' }}">
+            <i class="fa-solid fa-right-to-bracket"></i> Login</a>
+        {% endif %}
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle dark/light mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category if category in ['success', 'error', 'info'] else 'info' }}">
+            <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'error' %}fa-circle-xmark{% else %}fa-circle-info{% endif %}"></i>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p><i class="fa-solid fa-bowl-food"></i> &copy; 2025 Masala Magic &mdash; Find your next favorite recipe</p>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    function toggleNav() {
+      document.getElementById('navLinks').classList.toggle('active');
+    }
+
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+      link.addEventListener('click', function() {
+        document.getElementById('navLinks').classList.remove('active');
+      });
+    });
+
+    // Auto-dismiss flash messages
+    setTimeout(function() {
+      document.querySelectorAll('.flash').forEach(function(el) {
+        el.style.transition = 'opacity 0.5s, transform 0.5s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(30px)';
+        setTimeout(function() { el.remove(); }, 500);
+      });
+    }, 5000);
+
+    // Theme toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateThemeIcon(next);
+    }
+
+    function updateThemeIcon(theme) {
+      const icon = document.getElementById('themeIcon');
+      if (theme === 'dark') {
+        icon.className = 'fa-solid fa-sun';
+      } else {
+        icon.className = 'fa-solid fa-moon';
+      }
+    }
+
+    // Apply saved theme
+    (function() {
+      const saved = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeIcon(saved);
+    })();
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

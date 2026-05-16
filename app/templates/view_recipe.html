@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe['title'] }} - Masala Magic{% endblock %}
+
+{% block content %}
+<div class="container mt-3 mb-3">
+  <div class="recipe-detail">
+    <div class="recipe-detail-card">
+
+      <div class="recipe-header">
+        <h1><i class="fa-solid fa-utensils" style="color: var(--primary);"></i> {{ recipe['title'] }}</h1>
+        <div class="recipe-meta">
+          <span class="star-display">
+            {% set rating = recipe['avg_rating']|default(0)|round|int %}
+            {% for i in range(1, 6) %}
+              <span class="star {% if i <= rating %}filled{% endif %}"><i class="fa-solid fa-star"></i></span>
+            {% endfor %}
+          </span>
+          <span style="color: var(--text-muted); font-size: 0.9rem;">
+            <i class="fa-solid fa-users"></i> {{ recipe['rating_count']|default(0) }} ratings
+          </span>
+        </div>
+        <div class="actions">
+          {% if is_favorited %}
+          <form action="{{ url_for('favorites.unfavorite', recipe_id=recipe['id']) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-small"><i class="fa-solid fa-heart-crack"></i> Unfavorite</button>
+          </form>
+          {% else %}
+          <form action="{{ url_for('favorites.favorite', recipe_id=recipe['id']) }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-secondary btn-small"><i class="fa-regular fa-heart"></i> Favorite</button>
+          </form>
+          {% endif %}
+
+          {% if recipe['created_by'] == session.get('user_id') %}
+          <form action="{{ url_for('recipes.delete_recipe', recipe_id=recipe['id']) }}" method="POST" style="display:inline;"
+                onsubmit="return confirm('Are you sure you want to delete this recipe?');">
+            <button type="submit" class="btn btn-danger btn-small"><i class="fa-solid fa-trash"></i> Delete</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="recipe-section">
+        <h2><i class="fa-solid fa-align-left"></i> Description</h2>
+        <p style="color: var(--text-light); line-height: 1.7;">{{ recipe['description'] }}</p>
+      </div>
+
+      <div class="recipe-section">
+        <h2><i class="fa-solid fa-carrot"></i> Ingredients</h2>
+        <div class="ingredient-list">
+          {% set ns = namespace(current_cat='') %}
+          {% for ing in ingredients %}
+            {% if ing['category'] != ns.current_cat %}
+              {% set ns.current_cat = ing['category'] %}
+              <h4><i class="fa-solid fa-tag"></i> {{ ing['category']|capitalize }}</h4>
+            {% endif %}
+            <p style="padding: 0.4rem 0.75rem; margin-bottom: 0.2rem; font-size: 0.93rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text);">
+              <i class="fa-solid fa-check" style="color: var(--primary); font-size: 0.7rem;"></i>
+              {{ ing['name'] }} &mdash; {{ ing['quantity'] }}
+            </p>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="recipe-section">
+        <h2><i class="fa-solid fa-list-ol"></i> Steps</h2>
+        <div class="recipe-steps">
+          <ol>
+            {% for step in recipe['steps'].split('\n') %}
+              {% if step.strip() %}
+              <li>{{ step.strip() }}</li>
+              {% endif %}
+            {% endfor %}
+          </ol>
+        </div>
+      </div>
+
+      <div class="rating-section">
+        <h2><i class="fa-solid fa-star" style="color: var(--accent);"></i> Rate this Recipe</h2>
+        <form action="{{ url_for('recipes.rate_recipe', recipe_id=recipe['id']) }}" method="POST">
+          <input type="hidden" name="rating" id="ratingValue" value="{{ user_rating|default(0) }}">
+          <div class="stars" id="ratingStars">
+            {% for i in range(1, 6) %}
+            <span class="star {% if user_rating and i <= user_rating %}filled{% endif %}" data-value="{{ i }}"><i class="fa-solid fa-star"></i></span>
+            {% endfor %}
+          </div>
+          <button type="submit" class="btn btn-primary btn-small mt-1"><i class="fa-solid fa-paper-plane"></i> Submit Rating</button>
+        </form>
+      </div>
+
+    </div>
+
+    {% if similar %}
+    <div class="similar-section">
+      <h2><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> Similar Recipes</h2>
+      <div class="card-grid">
+        {% for s in similar %}
+        <a href="{{ url_for('recipes.view_recipe', recipe_id=s['id']) }}" class="recipe-card card">
+          <h3 class="card-title"><i class="fa-solid fa-utensils" style="color: var(--primary); font-size: 0.85rem;"></i> {{ s['title'] }}</h3>
+          <div class="card-meta">
+            <span class="star-display">
+              {% set sr = s['avg_rating']|default(0)|round|int %}
+              {% for i in range(1, 6) %}
+                <span class="star {% if i <= sr %}filled{% endif %}"><i class="fa-solid fa-star"></i></span>
+              {% endfor %}
+            </span>
+            <span><i class="fa-solid fa-link"></i> {{ s['shared_count'] }} shared</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function() {
+    var stars = document.querySelectorAll('#ratingStars .star');
+    var hidden = document.getElementById('ratingValue');
+
+    stars.forEach(function(star) {
+      star.addEventListener('click', function() {
+        var val = parseInt(this.getAttribute('data-value'));
+        hidden.value = val;
+        stars.forEach(function(s) {
+          if (parseInt(s.getAttribute('data-value')) <= val) {
+            s.classList.add('filled');
+          } else {
+            s.classList.remove('filled');
+          }
+        });
+      });
+    });
+  })();
+</script>
+{% endblock %}
